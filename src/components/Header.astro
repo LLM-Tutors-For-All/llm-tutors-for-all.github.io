@@ -1,0 +1,281 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import logo from '../assets/llm-tfa-logo.png';
+import Icon from './Icon.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  site: CollectionEntry<'site'>['data'];
+}
+
+const { site } = Astro.props;
+
+// A nav link is "current" when it points at this page (ignoring any #section).
+const here = Astro.url.pathname.replace(/\/?$/, '/');
+const isCurrent = (href: string) => {
+  const path = href.split('#')[0] ?? '';
+  return path !== '' && path.replace(/\/?$/, '/') === here && !href.includes('#');
+};
+---
+
+<header class="site-header">
+  <div class="container-site header-row">
+    <a href="/" class="brand">
+      <Image src={logo} alt="" width={32} height={32} densities={[1, 2, 3]} class="brand-logo" loading="eager" />
+      <span>{site.name}</span>
+    </a>
+
+    <nav aria-label="Primary" class="nav-desktop">
+      <ul>
+        {
+          site.nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a href={site.links.docs} class="docs-link">Docs</a>
+      <ThemeToggle />
+      <button
+        type="button"
+        class="menu-button"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        data-menu-button
+      >
+        <span class="sr-only">Menu</span>
+        <Icon name="menu" class="icon-open" size={22} />
+        <Icon name="close" class="icon-close" size={22} />
+      </button>
+    </div>
+  </div>
+
+  <nav id="mobile-nav" aria-label="Primary" class="nav-mobile" hidden data-menu>
+    <ul class="container-site">
+      {
+        site.nav.map((item) => (
+          <li>
+            <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a href={site.links.docs}>Documentation</a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--rule);
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: saturate(1.4) blur(12px);
+    -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  }
+
+  .header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    height: 4rem;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .brand-logo {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 7px;
+  }
+
+  /* The navy tile needs an edge to stand out on the dark header. */
+  :global([data-theme='dark']) .brand-logo {
+    box-shadow: 0 0 0 1px var(--rule-strong);
+  }
+
+  .nav-desktop {
+    display: none;
+  }
+
+  .nav-desktop ul {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .nav-desktop a,
+  .docs-link {
+    display: inline-block;
+    padding: 0.45rem 0.75rem;
+    border-radius: 3px;
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.0625rem;
+    letter-spacing: 0.015em;
+    line-height: 1.6;
+    text-decoration: none;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .nav-desktop a:hover,
+  .docs-link:hover {
+    color: var(--ink);
+    background: var(--surface);
+  }
+
+  /* The current page: ink text with a logo bar underneath, like a tab. */
+  .nav-desktop a {
+    position: relative;
+  }
+
+  .nav-desktop a[aria-current='page'] {
+    color: var(--ink);
+  }
+
+  .nav-desktop a[aria-current='page']::after {
+    content: '';
+    position: absolute;
+    left: 0.7rem;
+    right: 0.7rem;
+    bottom: -0.8rem;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: var(--signal);
+  }
+
+  .nav-mobile a[aria-current='page'] {
+    box-shadow: inset 3px 0 0 var(--signal);
+    padding-left: 0.85rem;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  /* Docs leaves the site, so it sits apart from the page links. */
+  .docs-link {
+    display: none;
+    color: var(--ink);
+    margin-right: 0.35rem;
+    padding-left: 1rem;
+    border-left: 1px solid var(--rule-strong);
+    border-radius: 0;
+  }
+
+  .menu-button {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+  }
+
+  .menu-button :global(svg) {
+    grid-area: 1 / 1;
+  }
+
+  .menu-button[aria-expanded='false'] :global(.icon-close),
+  .menu-button[aria-expanded='true'] :global(.icon-open) {
+    display: none;
+  }
+
+  .nav-mobile {
+    border-top: 1px solid var(--rule);
+    padding-block: 0.5rem 1rem;
+  }
+
+  .nav-mobile a {
+    display: block;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: 0.015em;
+    text-decoration: none;
+  }
+
+  .nav-mobile li:last-child a {
+    border-bottom: 0;
+  }
+
+  /* Without JavaScript the menu can't open, so show the links instead. */
+  @media (max-width: 63.99rem) {
+    :global(html:not(.js)) .nav-mobile[hidden] {
+      display: block;
+    }
+
+    :global(html:not(.js)) .menu-button {
+      display: none;
+    }
+  }
+
+  @media (min-width: 40rem) {
+    .docs-link {
+      display: inline-block;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .nav-desktop {
+      display: block;
+    }
+
+    .menu-button,
+    .nav-mobile {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('[data-menu-button]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+
+  if (button && menu) {
+    const setOpen = (open: boolean) => {
+      button.setAttribute('aria-expanded', String(open));
+      menu.hidden = !open;
+    };
+
+    button.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
+    menu.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !menu.hidden) {
+        setOpen(false);
+        button.focus();
+      }
+    });
+    window.matchMedia('(min-width: 64rem)').addEventListener('change', () => setOpen(false));
+  }
+</script>

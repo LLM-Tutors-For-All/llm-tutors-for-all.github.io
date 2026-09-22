@@ -1,0 +1,74 @@
+---
+import BenchmarkChart from '../../components/BenchmarkChart.astro';
+import Section from '../../components/Section.astro';
+import { getSection } from '../../lib/content';
+
+const { data } = await getSection('benchmarksPage', 'page');
+const { results } = data;
+---
+
+<Section id="results" title={results.title}>
+  <p slot="intro">{results.body}</p>
+
+  <div data-reveal>
+    <BenchmarkChart title={results.chartTitle} />
+  </div>
+
+  <div class="publishes" data-reveal>
+    <h3 class="type-h3">{results.publishTitle}</h3>
+    <ul>
+      {
+        results.publishes.map((item) => (
+          <li>
+            <p class="publish-title">{item.title}</p>
+            <p class="publish-body">{item.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Section>
+
+<style>
+  .publishes {
+    margin-top: clamp(3rem, 7vw, 4.5rem);
+  }
+
+  .publishes ul {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .publishes li {
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .publish-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.2;
+    letter-spacing: -0.022em;
+  }
+
+  .publish-body {
+    margin-top: 0.4rem;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  @media (min-width: 40rem) {
+    .publishes ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 2rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .publishes ul {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

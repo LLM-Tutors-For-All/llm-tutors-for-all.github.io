@@ -1,0 +1,181 @@
+---
+import Section from '../components/Section.astro';
+import { getSection } from '../lib/content';
+
+const { data, Content } = await getSection('howItWorks', 'how-it-works');
+---
+
+<Section id="how-it-works" title={data.title}>
+  <Content slot="intro" />
+
+  <ol class="pipeline" data-reveal>
+    {
+      data.steps.map((step, index) => (
+        <li class:list={['station', { 'is-source': index === 0 }]}>
+          <span class="marker" aria-hidden="true">
+            {index + 1}
+          </span>
+          <div class="station-text">
+            <h3 class="type-h3">
+              <span class="sr-only">Step {index + 1}: </span>
+              {step.title}
+            </h3>
+            {step.role && <p class="role">{step.role}</p>}
+            <p class="body">{step.body}</p>
+            {step.outputs && (
+              <ul class="outputs">
+                {step.outputs.map((output) => (
+                  <li>{output}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+
+  {
+    data.link && (
+      <p class="pipeline-link">
+        <a class="link" href={data.link.href}>
+          {data.link.label}
+        </a>
+      </p>
+    )
+  }
+</Section>
+
+<style>
+  /* Mobile: a vertical rail. Desktop: the stations sit in a row on one line. */
+  .pipeline {
+    --marker: 2.75rem;
+    display: grid;
+  }
+
+  .station {
+    position: relative;
+    display: grid;
+    align-content: start;
+    grid-template-columns: var(--marker) minmax(0, 1fr);
+    column-gap: 1.1rem;
+    padding-bottom: 2.25rem;
+  }
+
+  .station:last-child {
+    padding-bottom: 0;
+  }
+
+  .station::before {
+    content: '';
+    position: absolute;
+    top: var(--marker);
+    bottom: 0;
+    left: calc(var(--marker) / 2 - 1px);
+    width: 2px;
+    background: var(--rule-strong);
+  }
+
+  .station:last-child::before {
+    content: none;
+  }
+
+  .marker {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: var(--marker);
+    height: var(--marker);
+    border: 1.5px solid var(--ink);
+    border-radius: 3px;
+    background: var(--paper);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.375rem;
+    line-height: 1;
+  }
+
+  .is-source .marker {
+    background: var(--btn-bg);
+    border-color: var(--btn-bg);
+    color: var(--btn-fg);
+  }
+
+  .station-text h3 {
+    margin-top: 0.55rem;
+  }
+
+  .role {
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 1.0625rem;
+    letter-spacing: 0.015em;
+  }
+
+  .body {
+    margin-top: 0.6rem;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 30rem;
+  }
+
+  /* The final station fans out to each interface. */
+  .outputs {
+    margin-top: 0.9rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--signal);
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .outputs li {
+    position: relative;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.125rem;
+    letter-spacing: 0.015em;
+  }
+
+  .outputs li::before {
+    content: '';
+    position: absolute;
+    top: 0.8em;
+    left: -0.9rem;
+    width: 0.6rem;
+    height: 2px;
+    background: var(--signal);
+  }
+
+  .pipeline-link {
+    margin-top: 3rem;
+  }
+
+  @media (min-width: 64rem) {
+    .pipeline {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      column-gap: 2.5rem;
+    }
+
+    .station {
+      grid-template-columns: 1fr;
+      row-gap: 1.25rem;
+      padding-bottom: 0;
+    }
+
+    .station::before {
+      top: calc(var(--marker) / 2 - 1px);
+      bottom: auto;
+      left: var(--marker);
+      right: -2.5rem;
+      width: auto;
+      height: 2px;
+    }
+
+    .station-text h3 {
+      margin-top: 0;
+    }
+  }
+</style>

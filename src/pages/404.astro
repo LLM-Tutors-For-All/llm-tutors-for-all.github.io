@@ -1,0 +1,40 @@
+---
+import BrandMark from '../components/BrandMark.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSite } from '../lib/content';
+
+const site = await getSite();
+---
+
+<BaseLayout title="Page not found">
+  <section class="container-site not-found" aria-labelledby="not-found-title">
+    <BrandMark size={56} class="text-ink" />
+    <h1 id="not-found-title" class="type-display">This page doesn’t exist.</h1>
+    <p class="type-lead">
+      The link may be out of date. The documentation lives at
+      <a class="link" href={site.links.docs}>/Documentation/</a>.
+    </p>
+    <p>
+      <a class="btn btn-primary" href="/">Go to the home page</a>
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    gap: 1.75rem;
+    justify-items: start;
+    padding-block: clamp(5rem, 14vw, 10rem);
+  }
+
+  .not-found h1 {
+    font-size: clamp(2.75rem, 7vw, 5rem);
+    line-height: 1;
+  }
+
+  .not-found .type-lead {
+    max-width: 34rem;
+    color: var(--muted);
+  }
+</style>

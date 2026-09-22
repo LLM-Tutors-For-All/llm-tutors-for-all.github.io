@@ -1,0 +1,84 @@
+---
+import Icon from '../components/Icon.astro';
+import { getSection, getSite } from '../lib/content';
+
+const site = await getSite();
+const { data, Content } = await getSection('homeInvolved', 'get-involved');
+---
+
+<section id="get-involved" aria-labelledby="get-involved-title" class="section involved">
+  <div class="container-site involved-row" data-reveal>
+    <div>
+      <h2 id="get-involved-title" class="type-h2">{data.title}</h2>
+      <div class="involved-intro prose-intro">
+        <Content />
+      </div>
+      {
+        site.email && (
+          <a class="email" href={`mailto:${site.email}`}>
+            <Icon name="mail" size={22} />
+            <span>{site.email}</span>
+          </a>
+        )
+      }
+    </div>
+    <div class="involved-actions">
+      {
+        data.actions.map((action, index) => (
+          <a href={action.href} class:list={['btn', index === 0 ? 'btn-primary' : 'btn-secondary']}>
+            {action.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .involved-row {
+    display: grid;
+    gap: 2rem;
+    align-items: end;
+  }
+
+  .involved-intro {
+    margin-top: 1rem;
+    max-width: 34rem;
+    color: var(--muted);
+  }
+
+  .email {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: clamp(1.25rem, 2.2vw, 1.5rem);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+    text-decoration: underline;
+    text-decoration-color: var(--signal);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.22em;
+  }
+
+  .email :global(svg) {
+    flex: none;
+    color: var(--muted);
+  }
+
+  .involved-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 64rem) {
+    .involved-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 4rem;
+    }
+  }
+</style>

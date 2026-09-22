@@ -1,0 +1,24 @@
+---
+import PageIntro from '../components/PageIntro.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSection } from '../lib/content';
+import Deliverables from '../sections/benchmarks/Deliverables.astro';
+import Measures from '../sections/benchmarks/Measures.astro';
+import Results from '../sections/benchmarks/Results.astro';
+import WhatWeTest from '../sections/benchmarks/WhatWeTest.astro';
+
+const { data, Content } = await getSection('benchmarksPage', 'page');
+---
+
+<BaseLayout
+  title={data.title}
+  description="What LLM Tutors For All evaluates: proprietary and open-weight models and complete tutor systems, measured on quality, cost, latency and deployment."
+>
+  <PageIntro title={data.title}>
+    <Content />
+  </PageIntro>
+  <WhatWeTest />
+  <Measures />
+  <Results />
+  <Deliverables />
+</BaseLayout>

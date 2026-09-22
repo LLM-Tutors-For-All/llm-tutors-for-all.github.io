@@ -1,0 +1,74 @@
+---
+// Home page summary of the Benchmarks page. The lists come from the
+// Benchmarks page content, so the two never disagree.
+import Section from '../components/Section.astro';
+import { getSection } from '../lib/content';
+
+const { data, Content } = await getSection('benchmarksSummary', 'benchmarks');
+const { data: plan } = await getSection('benchmarksPage', 'page');
+
+const tested = plan.scope.items.flatMap((item) => item.groups?.map((group) => group.label) ?? [item.name]);
+
+const columns = [
+  { label: data.testLabel, items: tested },
+  { label: data.measureLabel, items: plan.criteria.items.map((item) => item.title) },
+  { label: data.methodLabel, items: plan.methods.items.map((item) => item.title) },
+];
+---
+
+<Section id="benchmarks" title={data.title}>
+  <Content slot="intro" />
+
+  <div class="summary" data-reveal>
+    {
+      columns.map((column) => (
+        <div class="summary-col">
+          <h3 class="type-h3">{column.label}</h3>
+          <ul>
+            {column.items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+
+  <p class="summary-link" data-reveal>
+    <a class="btn btn-primary" href={data.link.href}>{data.link.label}</a>
+  </p>
+</Section>
+
+<style>
+  .summary {
+    display: grid;
+    gap: 2.25rem;
+  }
+
+  .summary-col {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--ink);
+  }
+
+  .summary-col ul {
+    margin-top: 0.75rem;
+  }
+
+  .summary-col li {
+    padding-block: 0.55rem;
+    border-bottom: 1px solid var(--rule);
+    font-size: 1.25rem;
+    line-height: 1.35;
+  }
+
+  .summary-link {
+    margin-top: 2.75rem;
+  }
+
+  @media (min-width: 48rem) {
+    .summary {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: 2.5rem;
+    }
+  }
+</style>

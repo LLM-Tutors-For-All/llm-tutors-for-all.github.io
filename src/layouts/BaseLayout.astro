@@ -1,0 +1,130 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { getSite } from '../lib/content';
+
+interface Props {
+  /** Page title; the site name is appended. Omit on the home page. */
+  title?: string;
+  description?: string;
+}
+
+const site = await getSite();
+const { title, description = site.description } = Astro.props;
+const pageTitle = title ? `${title} | ${site.name}` : site.name;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/og.png', Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b1626" media="(prefers-color-scheme: dark)" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name}: ${site.byline}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Runs before first paint: picks the theme (saved choice, else the
+         system setting) and flags whether scroll motion is allowed. -->
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const colors = { light: '#fbfaf7', dark: '#0b1626' };
+        const system = window.matchMedia('(prefers-color-scheme: dark)');
+        const read = () => {
+          try {
+            const value = localStorage.getItem('theme');
+            return value === 'light' || value === 'dark' ? value : null;
+          } catch {
+            return null;
+          }
+        };
+        const apply = (theme) => {
+          root.dataset.theme = theme;
+          document
+            .querySelectorAll('meta[name="theme-color"]')
+            .forEach((meta) => meta.setAttribute('content', colors[theme]));
+          document.dispatchEvent(new CustomEvent('themechange'));
+        };
+        window.__setTheme = (theme, persist) => {
+          if (persist) {
+            try {
+              localStorage.setItem('theme', theme);
+            } catch {}
+          }
+          apply(theme);
+        };
+        apply(read() ?? (system.matches ? 'dark' : 'light'));
+        system.addEventListener('change', (event) => {
+          if (!read()) apply(event.matches ? 'dark' : 'light');
+        });
+
+        root.classList.add('js');
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!reduced && 'IntersectionObserver' in window) root.classList.add('motion-ok');
+      })();
+    </script>
+
+    <Font cssVariable="--font-inter" preload />
+    <Font cssVariable="--font-source-serif" preload />
+    <Font cssVariable="--font-barlow" preload />
+    <Font cssVariable="--font-source-code" />
+  </head>
+  <body class="bg-paper text-ink">
+    <a href="#main" class="skip-link">Skip to content</a>
+    <Header site={site} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer site={site} />
+
+    <script>
+      import '../scripts/reveal';
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 100;
+    padding: 0.6rem 1rem;
+    border-radius: 3px;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.125rem;
+    text-decoration: none;
+    transition: top 150ms ease;
+  }
+
+  .skip-link:focus {
+    top: 0.75rem;
+  }
+
+  main:focus {
+    outline: none;
+  }
+</style>

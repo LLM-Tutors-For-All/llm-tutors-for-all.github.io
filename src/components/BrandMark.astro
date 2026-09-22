@@ -1,0 +1,25 @@
+---
+// The bar mark from the organization logo (.github/profile/logo.svg), redrawn
+// with theme colors: ink bars and one amber bar.
+interface Props {
+  class?: string;
+  size?: number;
+}
+const { class: className, size = 28 } = Astro.props;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="44 46 96 108"
+  width={size * (96 / 108)}
+  height={size}
+  class={className}
+  aria-hidden="true"
+  focusable="false"
+>
+  <rect x="44" y="46" width="12" height="108" rx="4" fill="currentColor"></rect>
+  <rect x="64" y="46" width="76" height="20" rx="5" fill="currentColor"></rect>
+  <rect x="64" y="75" width="68" height="20" rx="5" fill="currentColor"></rect>
+  <rect x="64" y="104" width="76" height="20" rx="5" fill="var(--signal)"></rect>
+  <rect x="64" y="133" width="56" height="20" rx="5" fill="currentColor"></rect>
+</svg>

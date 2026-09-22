@@ -1,0 +1,549 @@
+---
+// One tutor question answered in each interface. Content: src/content/demo.yaml.
+//
+// Without JavaScript every surface is shown, one after another. With it, the
+// surfaces become tabs; if motion is allowed the demo then plays once,
+// streaming each reply, and offers Pause / Replay.
+import { Image } from 'astro:assets';
+import logo from '../assets/llm-tfa-logo.png';
+import { renderAnswer, renderPlain } from '../lib/answer';
+import { getDemo } from '../lib/content';
+
+const demo = await getDemo();
+---
+
+<figure class="demo" data-demo>
+  <div class="demo-frame">
+    <div class="demo-top">
+      <div class="demo-tabs" role="tablist" aria-label="Interface">
+        {
+          demo.surfaces.map((surface, index) => (
+            <button
+              type="button"
+              role="tab"
+              id={`demo-tab-${surface.id}`}
+              aria-controls={`demo-panel-${surface.id}`}
+              aria-selected={index === 0 ? 'true' : 'false'}
+              tabindex={index === 0 ? 0 : -1}
+            >
+              {surface.label}
+            </button>
+          ))
+        }
+      </div>
+      <button type="button" class="demo-play" data-demo-play>Play</button>
+    </div>
+
+    <div class="demo-screen">
+      {
+        demo.surfaces.map((surface, index) => (
+          <div
+            class:list={['demo-panel', `demo-${surface.style}`, { 'is-active': index === 0 }]}
+            role="tabpanel"
+            id={`demo-panel-${surface.id}`}
+            aria-labelledby={`demo-tab-${surface.id}`}
+            tabindex="0"
+            data-note={surface.note ?? ''}
+          >
+            <p class="demo-nojs-label">{surface.label}</p>
+            {surface.style === 'terminal' ? (
+              <div class="term">
+                <p class="term-line" data-demo-question>
+                  <span class="term-prompt" aria-hidden="true">
+                    $
+                  </span>
+                  <code>{surface.command ?? surface.question}</code>
+                </p>
+                <pre class="term-out" data-demo-answer set:html={renderPlain(surface.answer)} />
+              </div>
+            ) : (
+              <div class="chat">
+                <div class="msg" data-demo-question>
+                  <span class="avatar avatar-student" aria-hidden="true">
+                    S
+                  </span>
+                  <div class="msg-body">
+                    <p class="msg-name">Student</p>
+                    <p class="msg-text">
+                      {surface.mention && <span class="mention">{surface.mention}</span>} {surface.question}
+                    </p>
+                  </div>
+                </div>
+                <div class="msg">
+                  <Image src={logo} alt="" width={36} height={36} densities={[1, 2]} class="avatar avatar-bot" />
+                  <div class="msg-body">
+                    <p class="msg-name">
+                      {surface.botName} <span class="app-tag">App</span>
+                    </p>
+                    <div class="msg-text rich" data-demo-answer set:html={renderAnswer(surface.answer)} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+  <figcaption class="demo-caption">
+    <span class="demo-note" data-demo-note aria-live="polite">{demo.surfaces[0]?.note}</span>
+    <span>{demo.caption}</span>
+  </figcaption>
+</figure>
+
+<style>
+  .demo {
+    margin: 0;
+  }
+
+  .demo-frame {
+    border: 1px solid var(--rule-strong);
+    border-radius: 6px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .demo-top {
+    display: none;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-inline: 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  /* Underline tabs, the same as the header navigation. */
+  .demo-tabs {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .demo-tabs [role='tab'],
+  .demo-play {
+    position: relative;
+    padding: 0.7rem 0 0.75rem;
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.0625rem;
+    letter-spacing: 0.015em;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: color 150ms ease;
+  }
+
+  .demo-tabs [role='tab']:hover,
+  .demo-play:hover {
+    color: var(--ink);
+  }
+
+  .demo-tabs [role='tab'][aria-selected='true'] {
+    color: var(--ink);
+  }
+
+  .demo-tabs [role='tab'][aria-selected='true']::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: var(--signal);
+  }
+
+  .demo-play {
+    display: none;
+    padding-inline: 0.5rem;
+  }
+
+  /* The chat mock-ups use the system sans, as chat apps do. */
+  .demo-panel {
+    padding: 1.25rem;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+
+  .demo-panel + .demo-panel {
+    border-top: 1px solid var(--rule);
+  }
+
+  .demo-nojs-label {
+    margin-bottom: 0.75rem;
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  /* Enhanced: all surfaces share one grid cell, so the frame is always as tall
+     as the longest reply and switching tabs never moves the page. */
+  :global(html.js) .demo-top {
+    display: flex;
+  }
+
+  :global(html.motion-ok) .demo-play {
+    display: inline-block;
+  }
+
+  :global(html.js) .demo-screen {
+    display: grid;
+  }
+
+  :global(html.js) .demo-panel {
+    grid-area: 1 / 1;
+    border-top: 0;
+  }
+
+  :global(html.js) .demo-panel:not(.is-active) {
+    visibility: hidden;
+  }
+
+  :global(html.js) .demo-nojs-label {
+    display: none;
+  }
+
+  /* Terminal */
+  .term {
+    margin: -0.25rem;
+    padding: 1rem 1.1rem 1.2rem;
+    border-radius: 3px;
+    background: var(--terminal-bg);
+    color: var(--terminal-fg);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+  }
+
+  .term-line {
+    display: flex;
+    gap: 0.6rem;
+    color: var(--terminal-fg);
+  }
+
+  .term-line code {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .term-prompt {
+    color: var(--signal);
+  }
+
+  .term-out {
+    margin-top: 0.9rem;
+    color: var(--terminal-muted);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  /* Chat surfaces */
+  .chat {
+    display: grid;
+    gap: 1.1rem;
+  }
+
+  .msg {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+  }
+
+  .avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+  }
+
+  .avatar-student {
+    display: grid;
+    place-items: center;
+    background: var(--series-1);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .demo-slack .avatar {
+    border-radius: 8px;
+  }
+
+  .msg-name {
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+
+  .app-tag {
+    margin-left: 0.3rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 3px;
+    background: var(--rule);
+    color: var(--muted);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    vertical-align: 0.1em;
+  }
+
+  .msg-text {
+    margin-top: 0.15rem;
+    overflow-wrap: anywhere;
+  }
+
+  .mention {
+    padding: 0.05rem 0.25rem;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--series-1) 16%, transparent);
+    font-weight: 500;
+  }
+
+  .demo-slack .mention {
+    padding: 0;
+    background: none;
+    color: var(--series-1);
+  }
+
+  .rich :global(p + p),
+  .rich :global(p + pre),
+  .rich :global(pre + p) {
+    margin-top: 0.7rem;
+  }
+
+  .rich :global(code) {
+    padding: 0.05rem 0.3rem;
+    border-radius: 4px;
+    background: var(--code-bg);
+    font-size: 0.85em;
+  }
+
+  .rich :global(pre) {
+    padding: 0.7rem 0.85rem;
+    border-radius: 6px;
+    background: var(--terminal-bg);
+    color: var(--terminal-fg);
+    font-size: 0.8125rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .rich :global(pre code) {
+    padding: 0;
+    background: none;
+    font-size: inherit;
+  }
+
+  .demo-caption {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 0.9rem;
+    color: var(--muted);
+    font-size: 0.9375rem;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .demo-note:empty {
+    display: none;
+  }
+
+  .demo-note {
+    color: var(--ink);
+    font-style: normal;
+  }
+
+  /* Streaming */
+  .demo-panel.is-playing [data-demo-question]:not(.on) {
+    opacity: 0;
+  }
+
+  .demo-panel.is-playing :global(.w:not(.on)) {
+    opacity: 0;
+  }
+
+  /* Code backgrounds wait for their first word, so no empty boxes flash up. */
+  .demo-panel.is-playing .rich :global(pre:not(:has(.w.on))),
+  .demo-panel.is-playing .rich :global(code:not(:has(.w.on))) {
+    opacity: 0;
+  }
+
+  [data-demo-question],
+  .demo-panel :global(.w) {
+    transition: opacity 200ms ease;
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-demo]');
+
+  if (root) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+    const playButton = root.querySelector<HTMLButtonElement>('[data-demo-play]')!;
+    const note = root.querySelector<HTMLElement>('[data-demo-note]')!;
+
+    const select = (index: number, focus = false) => {
+      tabs.forEach((tab, i) => {
+        tab.setAttribute('aria-selected', String(i === index));
+        tab.tabIndex = i === index ? 0 : -1;
+      });
+      panels.forEach((panel, i) => panel.classList.toggle('is-active', i === index));
+      note.textContent = panels[index]?.dataset.note ?? '';
+      if (focus) tabs[index]?.focus();
+    };
+
+    // ---- Playback -------------------------------------------------------
+    // `run` identifies the current playthrough; bumping it cancels any
+    // pending step. Time only advances while not paused (and, via
+    // requestAnimationFrame, while the page is visible).
+    let run = 0;
+    let paused = false;
+    let playing = false;
+
+    const setButton = (label: 'Play' | 'Pause' | 'Resume' | 'Replay') => {
+      playButton.textContent = label;
+    };
+
+    const elapse = (ms: number, id: number, onTick?: (elapsed: number) => boolean) =>
+      new Promise<boolean>((resolve) => {
+        let elapsed = 0;
+        let last = performance.now();
+        const tick = (now: number) => {
+          if (id !== run) return resolve(false);
+          if (!paused) elapsed += now - last;
+          last = now;
+          const finished = onTick ? onTick(elapsed) : elapsed >= ms;
+          if (finished) resolve(true);
+          else requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+
+    const wordsOf = (panel: HTMLElement) => [...panel.querySelectorAll<HTMLElement>('.w')];
+
+    const showComplete = () => {
+      panels.forEach((panel) => {
+        panel.classList.remove('is-playing');
+        panel.removeAttribute('aria-busy');
+      });
+    };
+
+    const stream = async (panel: HTMLElement, id: number) => {
+      const question = panel.querySelector<HTMLElement>('[data-demo-question]');
+      const words = wordsOf(panel);
+      words.forEach((word) => word.classList.remove('on'));
+      question?.classList.remove('on');
+      panel.classList.add('is-playing');
+      panel.setAttribute('aria-busy', 'true');
+
+      if (!(await elapse(300, id))) return false;
+      question?.classList.add('on');
+      if (!(await elapse(650, id))) return false;
+
+      let shown = 0;
+      const ok = await elapse(0, id, (elapsed) => {
+        const target = Math.min(words.length, Math.floor(elapsed / 26));
+        while (shown < target) words[shown++]!.classList.add('on');
+        return shown >= words.length;
+      });
+      if (!ok) return false;
+
+      panel.classList.remove('is-playing');
+      panel.removeAttribute('aria-busy');
+      return true;
+    };
+
+    /** From the top: stream each surface in turn, pausing between them. */
+    const play = async ({ streamFirst }: { streamFirst: boolean }) => {
+      const id = ++run;
+      paused = false;
+      playing = true;
+      setButton('Pause');
+
+      for (let i = 0; i < panels.length; i++) {
+        select(i);
+        const panel = panels[i]!;
+        if (i > 0 || streamFirst) {
+          if (!(await stream(panel, id))) return;
+        }
+        if (i < panels.length - 1 && !(await elapse(2800, id))) return;
+      }
+
+      playing = false;
+      setButton('Replay');
+    };
+
+    const stop = () => {
+      run++;
+      playing = false;
+      paused = false;
+      showComplete();
+      setButton('Replay');
+    };
+
+    // ---- Tabs -----------------------------------------------------------
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => {
+        stop();
+        select(index);
+      });
+      tab.addEventListener('keydown', (event) => {
+        const last = tabs.length - 1;
+        const next =
+          event.key === 'ArrowRight'
+            ? (index + 1) % tabs.length
+            : event.key === 'ArrowLeft'
+              ? (index - 1 + tabs.length) % tabs.length
+              : event.key === 'Home'
+                ? 0
+                : event.key === 'End'
+                  ? last
+                  : null;
+        if (next === null) return;
+        event.preventDefault();
+        stop();
+        select(next, true);
+      });
+    });
+
+    // ---- Motion -----------------------------------------------------------
+    if (document.documentElement.classList.contains('motion-ok')) {
+      // Wrap each word of every reply so it can be revealed on its own.
+      panels.forEach((panel) => {
+        const answer = panel.querySelector('[data-demo-answer]');
+        if (!answer) return;
+        const walker = document.createTreeWalker(answer, NodeFilter.SHOW_TEXT);
+        const nodes: Text[] = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode as Text);
+        for (const node of nodes) {
+          const fragment = document.createDocumentFragment();
+          for (const part of node.data.split(/(\s+)/)) {
+            if (!part) continue;
+            if (/^\s+$/.test(part)) {
+              fragment.append(part);
+            } else {
+              const span = document.createElement('span');
+              span.className = 'w';
+              span.textContent = part;
+              fragment.append(span);
+            }
+          }
+          node.replaceWith(fragment);
+        }
+      });
+
+      playButton.addEventListener('click', () => {
+        if (playing) {
+          paused = !paused;
+          setButton(paused ? 'Resume' : 'Pause');
+        } else {
+          play({ streamFirst: true });
+        }
+      });
+
+      // The first surface is already on screen, so the opening playthrough
+      // holds it, then streams the others.
+      play({ streamFirst: false });
+    }
+  }
+</script>

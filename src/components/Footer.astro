@@ -1,0 +1,135 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BrandMark from './BrandMark.astro';
+
+interface Props {
+  site: CollectionEntry<'site'>['data'];
+}
+
+const { site } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container-site footer-grid">
+    <div class="footer-brand">
+      <p class="footer-name">
+        <BrandMark size={26} class="text-ink" />
+        <span>{site.name}</span>
+      </p>
+      <p class="footer-byline">{site.byline}</p>
+      {
+        site.email && (
+          <p class="footer-email">
+            <a class="link" href={`mailto:${site.email}`}>
+              {site.email}
+            </a>
+          </p>
+        )
+      }
+    </div>
+
+    {
+      site.footer.map((group) => (
+        <nav aria-label={group.title} class="footer-group">
+          <h2>{group.title}</h2>
+          <ul>
+            {group.links.map((item) => (
+              <li>
+                <a href={item.href}>{item.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+  </div>
+  <div class="container-site">
+    <p class="footer-base">© {year} {site.name}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--rule);
+    padding-block: 4rem 2rem;
+    font-size: 0.9375rem;
+  }
+
+  .footer-grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  .footer-name {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.0625rem;
+    letter-spacing: -0.02em;
+  }
+
+  .footer-byline {
+    margin-top: 0.5rem;
+    color: var(--muted);
+  }
+
+  .footer-email {
+    margin-top: 1rem;
+  }
+
+  .footer-group h2 {
+    margin-bottom: 0.75rem;
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 650;
+  }
+
+  .footer-group li + li {
+    margin-top: 0.4rem;
+  }
+
+  .footer-group a {
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 1.0625rem;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+
+  .footer-group a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--signal);
+    text-underline-offset: 0.2em;
+  }
+
+  .footer-base {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+  }
+
+  @media (min-width: 48rem) {
+    .footer-grid {
+      grid-template-columns: 2fr repeat(3, minmax(0, 1fr));
+    }
+
+    .footer-brand {
+      grid-column: auto;
+    }
+  }
+</style>

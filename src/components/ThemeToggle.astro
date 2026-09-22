@@ -1,0 +1,56 @@
+---
+import Icon from './Icon.astro';
+---
+
+<button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false">
+  <span class="sr-only">Dark theme</span>
+  <Icon name="moon" class="icon-moon" />
+  <Icon name="sun" class="icon-sun" />
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    color: var(--ink);
+    transition: background-color 160ms ease;
+  }
+
+  .theme-toggle:hover {
+    background: var(--surface);
+  }
+
+  .theme-toggle :global(svg) {
+    grid-area: 1 / 1;
+  }
+
+  /* Show the icon for the theme you'd switch to. */
+  .theme-toggle[aria-pressed='true'] :global(.icon-moon),
+  .theme-toggle[aria-pressed='false'] :global(.icon-sun) {
+    display: none;
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
+  const root = document.documentElement;
+
+  const sync = () => {
+    const dark = root.dataset.theme === 'dark';
+    buttons.forEach((button) => button.setAttribute('aria-pressed', String(dark)));
+  };
+
+  buttons.forEach((button) =>
+    button.addEventListener('click', () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      window.__setTheme?.(next, true);
+      sync();
+    }),
+  );
+
+  document.addEventListener('themechange', sync);
+  sync();
+</script>

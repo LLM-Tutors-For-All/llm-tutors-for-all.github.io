@@ -1,0 +1,113 @@
+---
+import TutorDemo from '../components/TutorDemo.astro';
+import { getSection, getSite } from '../lib/content';
+
+const site = await getSite();
+const { data, Content } = await getSection('hero', 'hero');
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container-site hero-grid">
+    <div class="hero-copy">
+      <p class="byline">
+        <span class="byline-bar" aria-hidden="true"></span>
+        {site.byline}
+      </p>
+      <h1 id="hero-title" class="type-display hero-title">{data.title}</h1>
+      <div class="hero-pitch type-lead prose-intro">
+        <Content />
+      </div>
+      <div class="hero-actions">
+        {
+          data.actions.map((action, index) => (
+            <a href={action.href} class:list={['btn', index === 0 ? 'btn-primary' : 'btn-secondary']}>
+              {action.label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+    <div class="hero-demo">
+      <TutorDemo />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-grid {
+    display: grid;
+    gap: 3.5rem;
+    padding-block: clamp(3.5rem, 9vw, 7rem) clamp(4.5rem, 10vw, 7.5rem);
+  }
+
+  .hero-grid > * {
+    min-width: 0;
+  }
+
+  .byline {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 1.125rem;
+    letter-spacing: 0.015em;
+  }
+
+  /* The amber bar from the logo mark. */
+  .byline-bar {
+    flex: none;
+    margin-top: 0.55em;
+    width: 1.6rem;
+    height: 0.45rem;
+    border-radius: 2px;
+    background: var(--signal);
+  }
+
+  .hero-title {
+    margin-top: 1.25rem;
+    max-width: 7ch;
+    font-size: clamp(3.4rem, 10vw, 6.75rem);
+    line-height: 0.92;
+  }
+
+  .hero-pitch {
+    margin-top: 1.75rem;
+    max-width: 31rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.75rem;
+    margin-top: 2.25rem;
+  }
+
+  @media (min-width: 64rem) {
+    .hero-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 2.5rem;
+      align-items: center;
+    }
+
+    .hero-copy {
+      grid-column: 1 / span 6;
+    }
+
+    .hero-demo {
+      grid-column: 7 / span 6;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .hero-copy {
+      grid-column: 1 / span 7;
+    }
+
+    .hero-demo {
+      grid-column: 8 / span 5;
+    }
+  }
+</style>

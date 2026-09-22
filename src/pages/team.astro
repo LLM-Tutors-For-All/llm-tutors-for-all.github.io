@@ -1,0 +1,27 @@
+---
+import PageIntro from '../components/PageIntro.astro';
+import TeamGrid from '../components/TeamGrid.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSection } from '../lib/content';
+import Contact from '../sections/team/Contact.astro';
+
+const { data, Content } = await getSection('teamPage', 'page');
+---
+
+<BaseLayout title={data.title} description="The team behind LLM Tutors For All, a UC Berkeley Data Discovery research project, and how to get in touch.">
+  <PageIntro title={data.title}>
+    <Content />
+  </PageIntro>
+  <section aria-label="Team members" class="members">
+    <div class="container-site" data-reveal>
+      <TeamGrid />
+    </div>
+  </section>
+  <Contact />
+</BaseLayout>
+
+<style>
+  .members {
+    padding-bottom: clamp(4rem, 9vw, 6.5rem);
+  }
+</style>

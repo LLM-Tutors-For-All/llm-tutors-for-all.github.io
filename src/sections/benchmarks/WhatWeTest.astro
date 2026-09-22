@@ -1,0 +1,151 @@
+---
+import Section from '../../components/Section.astro';
+import { getSection } from '../../lib/content';
+
+const { data } = await getSection('benchmarksPage', 'page');
+const { scope, questions } = data;
+---
+
+<Section id="what-we-test" title={scope.title}>
+  <div class="scope" data-reveal>
+    {
+      scope.items.map((item) => (
+        <div class="scope-item">
+          <h3 class="scope-name">{item.name}</h3>
+          <p class="scope-body">{item.body}</p>
+
+          {item.groups?.map((group) => (
+            <div class="group">
+              <p class="group-label">{group.label}</p>
+              <p class="families">{group.examples.join(', ')}</p>
+            </div>
+          ))}
+
+          {item.parts && (
+            <ul class="parts">
+              {item.parts.map((part) => (
+                <li>{part}</li>
+              ))}
+            </ul>
+          )}
+
+          {item.note && <p class="scope-note">{item.note}</p>}
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="questions" data-reveal>
+    <div>
+      <h3 class="type-h3">{questions.title}</h3>
+      <p class="questions-body">{questions.body}</p>
+    </div>
+    <ul class="kinds">
+      {questions.kinds.map((kind) => <li>{kind}</li>)}
+    </ul>
+  </div>
+</Section>
+
+<style>
+  .scope {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .scope-item {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ink);
+  }
+
+  .scope-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    line-height: 1.1;
+    letter-spacing: -0.032em;
+  }
+
+  .scope-body {
+    margin-top: 0.75rem;
+    max-width: 32rem;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .group {
+    margin-top: 1.5rem;
+  }
+
+  .group-label {
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.0625rem;
+    letter-spacing: 0.015em;
+  }
+
+  .families {
+    margin-top: 0.2rem;
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: 1.375rem;
+    letter-spacing: -0.02em;
+  }
+
+  .parts {
+    margin-top: 1.25rem;
+  }
+
+  .parts li {
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--rule);
+    font-size: 1rem;
+  }
+
+  .scope-note {
+    margin-top: 1.25rem;
+    color: var(--muted);
+    font-size: 0.9375rem;
+    font-style: italic;
+  }
+
+  .questions {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: clamp(3.5rem, 7vw, 5rem);
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    border-radius: 4px;
+    background: var(--surface);
+  }
+
+  .questions-body {
+    margin-top: 0.6rem;
+    max-width: 30rem;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .kinds li {
+    padding-block: 0.65rem;
+    border-bottom: 1px solid var(--rule-strong);
+    font-size: 1.25rem;
+    line-height: 1.35;
+  }
+
+  .kinds li:last-child {
+    border-bottom: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .scope {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 3rem;
+    }
+
+    .questions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 3rem;
+      align-items: start;
+    }
+  }
+</style>

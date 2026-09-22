@@ -1,0 +1,60 @@
+# The animated tutor demo in the hero. Each surface is one tab.
+#
+#   style         terminal, discord or slack (controls how the reply is drawn)
+#   answer        the tutor's reply. `backticks` become code; a line of ``` starts
+#                 and ends a code block. In the terminal style everything prints as typed.
+#   illustrative  true if this reply was not captured from that interface
+#   note          optional line shown under the demo while this tab is open
+
+caption: >-
+  Discord and Slack replies are transcribed from tutor screenshots in the
+  project docs. The CLI view reuses the Discord reply to show the terminal format.
+
+surfaces:
+  - id: cli
+    label: Local CLI
+    style: terminal
+    question: How can I filter a table
+    command: python -m tutor ask "How can I filter a table"
+    illustrative: true
+    answer: |
+      To filter a table, you can use the `where` method, which allows you to specify a condition that the rows must meet.
+
+      For example, if you have a table called `my_table` and you want to filter it to include only rows where a certain column (let's say `"column_name"`) meets a specific condition (like being greater than a certain value), you would write:
+
+      ```
+      filtered_table = my_table.where("column_name", are.above(value))
+      ```
+
+  - id: discord
+    label: Discord
+    style: discord
+    question: '"How can I filter a table"'
+    mention: "@Data 8 Tutor"
+    botName: Data 8 Tutor
+    answer: |
+      To filter a table, you can use the `where` method, which allows you to specify a condition that the rows must meet.
+
+      For example, if you have a table called `my_table` and you want to filter it to include only rows where a certain column (let's say `"column_name"`) meets a specific condition (like being greater than a certain value), you would write:
+
+      ```
+      filtered_table = my_table.where("column_name", are.above(value))
+      ```
+
+  - id: slack
+    label: Slack
+    style: slack
+    question: How to filter from table?
+    mention: "@Data8 Tutor"
+    botName: Data8 Tutor
+    note: >-
+      Same engine, different surface: Slack shows the reply’s Markdown bold as
+      literal asterisks.
+    answer: |
+      To filter rows from a table, you'll typically use the `where` method. This allows you to specify a condition based on a column's values.
+
+      Here's a general process to follow:
+      1. **Identify the table** you want to filter.
+      2. **Choose the column** you want to filter by.
+      3. **Define the condition** for filtering (e.g., greater than a certain value, equal to a specific value, etc.).
+      4. **Use the `where` method** to apply the filter.

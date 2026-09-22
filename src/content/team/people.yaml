@@ -1,0 +1,43 @@
+# The team roster shown on the Team page (/team/). People appear in this order.
+#
+#   name, role   required
+#   photo        optional: a file name in src/assets/team/ (without it, initials are shown)
+#   github       optional: full profile URL
+#   linkedin     optional: full profile URL
+
+- name: Benjamin Telanoff
+  role: Project contributor
+  github: https://github.com/BenTel86
+  linkedin: https://www.linkedin.com/in/benjamin-telanoff-088a5b251
+
+- name: Christopher Mach
+  role: Benchmark researcher
+  github: https://github.com/DolphinDP
+
+- name: Edwin Vargas
+  role: Project manager
+  photo: edwin-vargas.jpg
+  github: https://github.com/jedwin3210
+  linkedin: https://www.linkedin.com/in/edwin-vargas-navarro-423014237
+
+- name: Justin Le
+  role: Benchmark researcher
+  github: https://github.com/justontyme
+
+- name: Khas-Erdene
+  role: Benchmark researcher
+  github: https://github.com/Khas-Erdene-Tsogtsaikhan
+
+- name: Lindsay Lai
+  role: Benchmark researcher
+  github: https://github.com/lindsaylai
+
+- name: Silas Santini
+  role: Project manager
+  photo: silas-santini.jpg
+  github: https://github.com/pancakereport
+  linkedin: https://www.linkedin.com/in/silas-santini
+
+- name: Yiran Hu
+  role: Benchmark researcher
+  github: https://github.com/YiranHu361

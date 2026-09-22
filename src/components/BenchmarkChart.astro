@@ -1,0 +1,477 @@
+---
+// Grouped horizontal bars built from src/data/benchmarks.json.
+//
+// Each metric is a real <table> (interface → model setup → value) drawn as bars,
+// so the numbers are readable by screen readers and without CSS. With
+// JavaScript the metrics become tabs; without it they are listed in turn.
+import { getBenchmarks } from '../lib/content';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+const data = await getBenchmarks();
+
+type Metric = (typeof data.metrics)[number];
+
+const statusLabel = {
+  placeholder: 'Placeholder data',
+  preliminary: 'Preliminary results',
+  final: null,
+}[data.status];
+
+const format = (value: number | null, metric: Metric) =>
+  value === null ? 'Not measured yet' : `${metric.prefix}${value.toFixed(metric.decimals)}${metric.suffix}`;
+
+/** Scale the longest bar to a round number just above the largest value. */
+const scaleMax = (metric: Metric) => {
+  if (metric.max) return metric.max;
+  const values = Object.values(metric.values)
+    .flatMap((row) => Object.values(row))
+    .filter((value): value is number => value !== null);
+  const largest = Math.max(0, ...values);
+  if (largest === 0) return 1;
+  const magnitude = 10 ** Math.floor(Math.log10(largest));
+  const step = [1, 1.25, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10].find((s) => s * magnitude >= largest) ?? 10;
+  return step * magnitude;
+};
+
+const captionSuffix = data.status === 'placeholder' ? ' Placeholder values, not measurements.' : '';
+---
+
+<figure class="bench" data-bench data-status={data.status} aria-labelledby="bench-title">
+  <div class="bench-head">
+    <h3 id="bench-title" class="type-h3">{title}</h3>
+    {
+      statusLabel && (
+        <p class="bench-status">
+          <span class="status-mark" aria-hidden="true" />
+          {statusLabel}
+        </p>
+      )
+    }
+  </div>
+  {statusLabel && <p class="bench-note">{data.note}</p>}
+
+  <div class="bench-controls">
+    <div class="bench-tabs" role="tablist" aria-label="Metric">
+      {
+        data.metrics.map((metric, index) => (
+          <button
+            type="button"
+            role="tab"
+            id={`bench-tab-${metric.id}`}
+            aria-controls={`bench-panel-${metric.id}`}
+            aria-selected={index === 0 ? 'true' : 'false'}
+            tabindex={index === 0 ? 0 : -1}
+          >
+            {metric.label}
+          </button>
+        ))
+      }
+    </div>
+    <ul class="bench-legend" aria-label="Legend">
+      {
+        data.series.map((series, index) => (
+          <li>
+            <span class={`swatch series-${index + 1}`} aria-hidden="true" />
+            {series.label}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  {
+    data.metrics.map((metric, index) => {
+      const max = scaleMax(metric);
+      return (
+        <div
+          class:list={['bench-panel', { 'is-active': index === 0 }]}
+          role="tabpanel"
+          id={`bench-panel-${metric.id}`}
+          aria-labelledby={`bench-tab-${metric.id}`}
+          tabindex="0"
+        >
+          <h4 class="bench-nojs-label">{metric.label}</h4>
+          <p class="bench-desc">
+            {metric.description} {metric.better === 'lower' ? 'Lower is better.' : 'Higher is better.'}
+          </p>
+          <table class="bench-table">
+            <caption class="sr-only">
+              {metric.label} by interface and model setup.{captionSuffix}
+            </caption>
+            <thead class="sr-only">
+              <tr>
+                <th scope="col">Model setup</th>
+                <th scope="col">{metric.label}</th>
+              </tr>
+            </thead>
+            {data.groups.map((group) => (
+              <tbody>
+                <tr class="group-row">
+                  <th scope="rowgroup" colspan="2">
+                    {group.label}
+                  </th>
+                </tr>
+                {data.series.map((series, seriesIndex) => {
+                  const value = metric.values[group.id]?.[series.id] ?? null;
+                  const fraction = value === null ? 0 : Math.min(1, value / max);
+                  return (
+                    <tr class="bar-row">
+                      <th scope="row" class="series-label">
+                        {series.label}
+                      </th>
+                      <td>
+                        <div class="bar-cell">
+                          {value !== null && (
+                            <span
+                              class={`bar series-${seriesIndex + 1}`}
+                              style={`--f: ${fraction.toFixed(4)}`}
+                              aria-hidden="true"
+                            />
+                          )}
+                          <span class:list={['bar-value', { 'is-missing': value === null }]}>
+                            {format(value, metric)}
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            ))}
+          </table>
+        </div>
+      );
+    })
+  }
+
+  {
+    (data.updated || data.methodologyUrl) && (
+      <p class="bench-meta">
+        {data.updated && <span>Updated {data.updated}.</span>}{' '}
+        {data.methodologyUrl && (
+          <a class="link" href={data.methodologyUrl}>
+            Read the methodology
+          </a>
+        )}
+      </p>
+    )
+  }
+</figure>
+
+<style>
+  .bench {
+    margin: 0;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border: 1px solid var(--rule-strong);
+    border-radius: 4px;
+  }
+
+  .bench-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .bench-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--signal) 22%, transparent);
+    font-family: var(--font-ui);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: 0.015em;
+  }
+
+  .status-mark {
+    width: 0.9rem;
+    height: 0.3rem;
+    border-radius: 1px;
+    background: var(--signal);
+  }
+
+  .bench-note {
+    margin-top: 0.75rem;
+    max-width: 44rem;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .bench-controls {
+    display: none;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-top: 1.75rem;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  :global(html.js) .bench-controls {
+    display: flex;
+  }
+
+  /* Underline tabs, the same as the header navigation. */
+  .bench-tabs {
+    display: flex;
+    gap: 1.75rem;
+  }
+
+  .bench-tabs [role='tab'] {
+    position: relative;
+    padding: 0.4rem 0 0.7rem;
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-size: 1.1875rem;
+    font-weight: 600;
+    letter-spacing: 0.015em;
+    transition: color 150ms ease;
+  }
+
+  .bench-tabs [role='tab']:hover {
+    color: var(--ink);
+  }
+
+  .bench-tabs [role='tab'][aria-selected='true'] {
+    color: var(--ink);
+  }
+
+  .bench-tabs [role='tab'][aria-selected='true']::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: var(--signal);
+  }
+
+  .bench-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    padding-bottom: 0.75rem;
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  .bench-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .swatch {
+    width: 0.9rem;
+    height: 0.75rem;
+    border-radius: 0 3px 3px 0;
+  }
+
+  .series-1 {
+    background: var(--series-1);
+  }
+
+  .series-2 {
+    background: var(--series-2);
+  }
+
+  /* Placeholder bars are drawn lighter, as a second cue beside the label. */
+  [data-status='placeholder'] .bar,
+  [data-status='placeholder'] .swatch {
+    opacity: 0.7;
+  }
+
+  .bench-panel {
+    margin-top: 1.5rem;
+  }
+
+  .bench-panel + .bench-panel {
+    margin-top: 2.5rem;
+  }
+
+  :global(html.js) .bench-panel + .bench-panel {
+    margin-top: 1.5rem;
+  }
+
+  :global(html.js) .bench-panel:not(.is-active) {
+    display: none;
+  }
+
+  .bench-nojs-label {
+    margin-top: 1.5rem;
+    font-family: var(--font-display);
+    font-weight: 650;
+  }
+
+  :global(html.js) .bench-nojs-label {
+    display: none;
+  }
+
+  .bench-desc {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .bench-table {
+    width: 100%;
+    margin-top: 0.75rem;
+    border-collapse: collapse;
+  }
+
+  .group-row th {
+    padding: 1.1rem 0 0.4rem;
+    text-align: left;
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  tbody:first-of-type .group-row th {
+    padding-top: 0.5rem;
+  }
+
+  .bar-row th,
+  .bar-row td {
+    padding: 0.3rem 0;
+    vertical-align: middle;
+  }
+
+  .series-label {
+    width: 38%;
+    padding-right: 0.75rem !important;
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    text-align: left;
+  }
+
+  .bar-row:hover .series-label {
+    color: var(--ink);
+  }
+
+  /* The bar grows from a hairline baseline; the value sits at its tip. */
+  .bar-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 1.75rem;
+    border-left: 1px solid var(--rule-strong);
+  }
+
+  .bar {
+    flex: none;
+    width: calc((100% - 5.5rem) * var(--f));
+    height: 14px;
+    border-radius: 0 4px 4px 0;
+    transition: width 650ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  :global(html.motion-ok) .bench-panel:not(.is-grown) .bar {
+    width: 0;
+  }
+
+  .bar-value {
+    flex: none;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.0625rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bar-value.is-missing {
+    padding-left: 0.6rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .bench-meta {
+    margin-top: 1.5rem;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  @media (min-width: 40rem) {
+    .series-label {
+      width: 13rem;
+    }
+  }
+
+  @media print {
+    :global(html.motion-ok) .bench-panel .bar {
+      width: calc((100% - 5.5rem) * var(--f));
+    }
+  }
+</style>
+
+<script>
+  const chart = document.querySelector<HTMLElement>('[data-bench]');
+
+  if (chart) {
+    const tabs = [...chart.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...chart.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+    const motion = document.documentElement.classList.contains('motion-ok');
+
+    const grow = (panel: HTMLElement) => {
+      if (!motion) return;
+      panel.classList.remove('is-grown');
+      // Next frame, so the width change from 0 is animated.
+      requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('is-grown')));
+    };
+
+    const select = (index: number, focus = false) => {
+      tabs.forEach((tab, i) => {
+        tab.setAttribute('aria-selected', String(i === index));
+        tab.tabIndex = i === index ? 0 : -1;
+      });
+      panels.forEach((panel, i) => panel.classList.toggle('is-active', i === index));
+      if (focus) tabs[index]?.focus();
+      const panel = panels[index];
+      if (panel) grow(panel);
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => select(index));
+      tab.addEventListener('keydown', (event) => {
+        const keys: Record<string, number> = {
+          ArrowRight: (index + 1) % tabs.length,
+          ArrowLeft: (index - 1 + tabs.length) % tabs.length,
+          Home: 0,
+          End: tabs.length - 1,
+        };
+        const next = keys[event.key];
+        if (next === undefined) return;
+        event.preventDefault();
+        select(next, true);
+      });
+    });
+
+    // Grow the first metric's bars the first time the chart scrolls into view.
+    if (motion) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return;
+          observer.disconnect();
+          const active = panels.find((panel) => panel.classList.contains('is-active'));
+          if (active) grow(active);
+        },
+        { threshold: 0.3 },
+      );
+      observer.observe(chart);
+    }
+  }
+</script>

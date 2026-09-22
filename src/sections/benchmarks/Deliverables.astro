@@ -1,0 +1,74 @@
+---
+import Section from '../../components/Section.astro';
+import { getSection } from '../../lib/content';
+
+const { data } = await getSection('benchmarksPage', 'page');
+const { deliverables, docsLink } = data;
+---
+
+<Section id="deliverables" title={deliverables.title}>
+  <ul class="deliverables" data-reveal>
+    {
+      deliverables.items.map((item) => (
+        <li>
+          <h3 class="deliverable-title">{item.title}</h3>
+          <p>{item.body}</p>
+        </li>
+      ))
+    }
+  </ul>
+
+  {
+    docsLink && (
+      <p class="docs-link">
+        <a class="link" href={docsLink.href}>
+          {docsLink.label}
+        </a>
+      </p>
+    )
+  }
+</Section>
+
+<style>
+  .deliverables {
+    display: grid;
+    gap: 2.25rem;
+  }
+
+  .deliverables li {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--ink);
+  }
+
+  .deliverable-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.3125rem;
+    line-height: 1.2;
+    letter-spacing: -0.024em;
+  }
+
+  .deliverables p {
+    margin-top: 0.6rem;
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 30rem;
+  }
+
+  .docs-link {
+    margin-top: 2.5rem;
+  }
+
+  @media (min-width: 48rem) {
+    .deliverables {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 2.5rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .deliverables {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

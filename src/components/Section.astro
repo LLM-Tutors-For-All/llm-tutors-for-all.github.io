@@ -1,0 +1,66 @@
+---
+// The frame every page section shares: an id for navigation, a heading, an
+// optional intro (Markdown from the section's content file) and its content.
+interface Props {
+  id: string;
+  title: string;
+  /** "split" puts the intro beside the heading on wide screens. */
+  layout?: 'split' | 'stacked';
+  class?: string;
+}
+
+const { id, title, layout = 'split', class: className } = Astro.props;
+const hasIntro = Astro.slots.has('intro');
+---
+
+<section id={id} aria-labelledby={`${id}-title`} class:list={['section', className]}>
+  <div class="container-site">
+    <div class:list={['section-head', layout, { 'has-intro': hasIntro }]} data-reveal>
+      <h2 id={`${id}-title`} class="type-h2">{title}</h2>
+      {
+        hasIntro && (
+          <div class="section-intro prose-intro">
+            <slot name="intro" />
+          </div>
+        )
+      }
+    </div>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .section-head {
+    display: grid;
+    gap: 1.25rem;
+    margin-bottom: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .section-head h2 {
+    max-width: 18ch;
+  }
+
+  .section-intro {
+    max-width: 36rem;
+    color: var(--muted);
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+
+  @media (min-width: 64rem) {
+    .section-head.split.has-intro {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 2.5rem;
+      align-items: end;
+    }
+
+    .split.has-intro h2 {
+      grid-column: 1 / span 6;
+    }
+
+    .split.has-intro .section-intro {
+      grid-column: 8 / span 5;
+      font-size: 1.1875rem;
+    }
+  }
+</style>

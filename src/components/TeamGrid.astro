@@ -1,0 +1,152 @@
+---
+import { Image } from 'astro:assets';
+import { getTeam } from '../lib/content';
+import Icon from './Icon.astro';
+
+const team = await getTeam();
+
+// Photos are files in src/assets/team/, referenced by file name in team.yaml.
+const photos = import.meta.glob<{ default: ImageMetadata }>('../assets/team/*.{jpg,jpeg,png,webp,avif}', {
+  eager: true,
+});
+
+const photoFor = (file: string) => {
+  const found = photos[`../assets/team/${file}`];
+  if (!found) {
+    throw new Error(`team.yaml: photo "${file}" was not found in src/assets/team/.`);
+  }
+  return found.default;
+};
+
+const initials = (name: string) => {
+  const words = name.split(/\s+/).filter(Boolean);
+  const parts = words.length > 1 ? [words[0], words[words.length - 1]] : name.split('-');
+  return parts
+    .map((part) => part?.[0] ?? '')
+    .join('')
+    .toUpperCase();
+};
+---
+
+<ul class="team">
+  {
+    team.map((person) => (
+      <li class="person">
+        {person.photo ? (
+          <Image
+            src={photoFor(person.photo)}
+            alt=""
+            width={96}
+            height={96}
+            densities={[1, 2]}
+            fit="cover"
+            position="center"
+            class="portrait"
+          />
+        ) : (
+          <span class="portrait monogram" aria-hidden="true">
+            {initials(person.name)}
+          </span>
+        )}
+        <div class="person-text">
+          <p class="person-name">{person.name}</p>
+          <p class="person-role">{person.role}</p>
+          {(person.github || person.linkedin) && (
+            <p class="person-links">
+              {person.github && (
+                <a href={person.github}>
+                  <Icon name="github" size={18} label={`${person.name} on GitHub`} />
+                </a>
+              )}
+              {person.linkedin && (
+                <a href={person.linkedin}>
+                  <Icon name="linkedin" size={18} label={`${person.name} on LinkedIn`} />
+                </a>
+              )}
+            </p>
+          )}
+        </div>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .team {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1.25rem;
+  }
+
+  .person {
+    display: grid;
+    gap: 0.9rem;
+    align-content: start;
+  }
+
+  .portrait {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .monogram {
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--rule-strong);
+    background: var(--surface);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+
+  .person-name {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: 1.0625rem;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+  }
+
+  .person-role {
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 1.0625rem;
+    letter-spacing: 0.01em;
+  }
+
+  .person-links {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.4rem;
+    margin-left: -0.5rem;
+  }
+
+  .person-links a {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    color: var(--muted);
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .person-links a:hover {
+    color: var(--ink);
+    background: var(--surface);
+  }
+
+  @media (min-width: 48rem) {
+    .team {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 2.5rem 2rem;
+    }
+  }
+</style>

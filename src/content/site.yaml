@@ -1,0 +1,56 @@
+# Site-wide settings: the name, links and navigation used on every page.
+# After editing, run `npm run build` (or watch `npm run dev`) to check the file.
+
+name: LLM Tutors For All
+byline: A UC Berkeley Data Discovery research project
+
+# Shown by search engines and link previews. Keep it under 170 characters.
+description: >-
+  A reproducible benchmark for LLMs in education, comparing proprietary and
+  open-weight models and complete tutor systems on quality, cost and latency.
+
+url: https://llm-tutors-for-all.github.io
+
+# Shown in "Get involved" and the footer. Leave empty ('') to hide it.
+email: jedwin321@berkeley.edu
+
+links:
+  docs: https://llm-tutors-for-all.github.io/Documentation/home/
+  github: https://github.com/LLM-Tutors-For-All
+  docsRepo: https://github.com/LLM-Tutors-For-All/Documentation
+
+# Header navigation: one link per page. The link for the page you're on is
+# highlighted. Links to a section use "#", e.g. /#research.
+nav:
+  - label: Overview
+    href: /
+  - label: Benchmarks
+    href: /benchmarks/
+  - label: Team
+    href: /team/
+
+footer:
+  - title: Project
+    links:
+      - label: Overview
+        href: /
+      - label: Benchmarks
+        href: /benchmarks/
+      - label: Research direction
+        href: /#research
+      - label: Team
+        href: /team/
+  - title: Documentation
+    links:
+      - label: Docs home
+        href: https://llm-tutors-for-all.github.io/Documentation/home/
+      - label: Data 8 getting started
+        href: https://llm-tutors-for-all.github.io/Documentation/how-to-use-our-bots/data8/getting-started/
+      - label: Docs contact page
+        href: https://llm-tutors-for-all.github.io/Documentation/contact/
+  - title: Code
+    links:
+      - label: GitHub organization
+        href: https://github.com/LLM-Tutors-For-All
+      - label: Documentation repository
+        href: https://github.com/LLM-Tutors-For-All/Documentation

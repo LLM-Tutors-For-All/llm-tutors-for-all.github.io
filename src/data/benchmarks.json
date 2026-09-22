@@ -1,0 +1,58 @@
+{
+  "about": "Chart data for the Benchmarks section. See 'Benchmark data' in README.md before editing. While status is 'placeholder', every number below is a stand-in, not a measurement.",
+  "status": "placeholder",
+  "note": "These values only preview the chart layout. Nothing here is a measurement, and no benchmark results have been published yet.",
+  "updated": null,
+  "methodologyUrl": null,
+  "groups": [
+    { "id": "cli", "label": "Local CLI" },
+    { "id": "discord", "label": "Discord" },
+    { "id": "slack", "label": "Slack" }
+  ],
+  "series": [
+    { "id": "base", "label": "Out-of-the-box model" },
+    { "id": "harnessed", "label": "Harnessed tutor" }
+  ],
+  "metrics": [
+    {
+      "id": "latency",
+      "label": "Response time",
+      "description": "Median seconds from sending a question to seeing the full answer.",
+      "better": "lower",
+      "suffix": " s",
+      "decimals": 1,
+      "values": {
+        "cli": { "base": 1.0, "harnessed": 1.5 },
+        "discord": { "base": 2.0, "harnessed": 2.5 },
+        "slack": { "base": 3.0, "harnessed": 3.5 }
+      }
+    },
+    {
+      "id": "reliability",
+      "label": "Reliability",
+      "description": "Share of questions that received a complete answer.",
+      "better": "higher",
+      "suffix": "%",
+      "decimals": 0,
+      "max": 100,
+      "values": {
+        "cli": { "base": 90, "harnessed": 95 },
+        "discord": { "base": 80, "harnessed": 85 },
+        "slack": { "base": 70, "harnessed": 75 }
+      }
+    },
+    {
+      "id": "cost",
+      "label": "Cost",
+      "description": "API cost in US dollars per 100 questions.",
+      "better": "lower",
+      "prefix": "$",
+      "decimals": 2,
+      "values": {
+        "cli": { "base": 0.10, "harnessed": 0.15 },
+        "discord": { "base": 0.20, "harnessed": 0.25 },
+        "slack": { "base": 0.30, "harnessed": 0.35 }
+      }
+    }
+  ]
+}

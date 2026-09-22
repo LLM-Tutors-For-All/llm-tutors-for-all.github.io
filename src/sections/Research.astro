@@ -1,0 +1,85 @@
+---
+import Section from '../components/Section.astro';
+import { getSection } from '../lib/content';
+
+const { data, Content } = await getSection('research', 'research');
+---
+
+<Section id="research" title={data.title}>
+  <Content slot="intro" />
+
+  <ol class="stages" data-reveal>
+    {
+      data.stages.map((stage) => (
+        <li class:list={['stage', { 'is-current': stage.current }]}>
+          <h3 class="stage-name">
+            <span class="stage-bar" aria-hidden="true" />
+            {stage.name}
+            {stage.current && <span class="sr-only"> (current stage)</span>}
+          </h3>
+          <ul>
+            {stage.items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ol>
+</Section>
+
+<style>
+  .stages {
+    display: grid;
+    gap: 2.75rem;
+  }
+
+  .stage-name {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--ink);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.75rem;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  /* Logo bars: amber marks the stage the project is in. */
+  .stage-bar {
+    flex: none;
+    width: 1.5rem;
+    height: 0.5rem;
+    border-radius: 2px;
+    border: 1.5px solid var(--ink);
+  }
+
+  .is-current .stage-bar {
+    border-color: var(--signal);
+    background: var(--signal);
+  }
+
+  .stage ul {
+    display: grid;
+  }
+
+  .stage ul li {
+    padding-block: 0.85rem;
+    border-bottom: 1px solid var(--rule);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .stage:not(.is-current) ul li {
+    color: var(--muted);
+  }
+
+  @media (min-width: 48rem) {
+    .stages {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: 2.5rem;
+    }
+  }
+</style>

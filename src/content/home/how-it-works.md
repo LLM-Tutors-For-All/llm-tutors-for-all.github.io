@@ -18,11 +18,14 @@ steps:
       up to eight retrieved passages, the tutor’s instructions and recent chat.
   - title: Interfaces
     role: Where learners ask
-    body: The same response engine answers in every interface.
+    body: >-
+      Local CLI, Discord and Slack share one response engine. Grok Bot is a
+      hosted template that sets up the Spring 2026 materials on its own.
     outputs:
       - Local CLI
       - Discord
       - Slack
+      - Grok Bot
 link:
   label: How the knowledge base and brain fit together
   href: https://llm-tutors-for-all.github.io/Documentation/model-options/

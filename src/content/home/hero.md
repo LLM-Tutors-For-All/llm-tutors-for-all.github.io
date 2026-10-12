@@ -3,7 +3,7 @@
 title: LLM Tutors For All
 actions:
   - label: Read the docs
-    href: https://llm-tutors-for-all.github.io/Documentation/home/
+    href: https://llm-tutors-for-all.github.io/Documentation/
   - label: View benchmarks
     href: /benchmarks/
 ---

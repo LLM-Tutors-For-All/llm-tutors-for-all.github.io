@@ -5,7 +5,7 @@ stages:
   - name: Now
     current: true
     items:
-      - A Data 8 tutor running in the local CLI, Discord and Slack
+      - A Data 8 tutor running in the local CLI, Discord, Slack and Grok Bot
       - "An evaluation framework in development: educational prompts, criteria and a testing pipeline"
   - name: Next
     items:

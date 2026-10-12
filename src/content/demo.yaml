@@ -1,6 +1,6 @@
 # The animated tutor demo in the hero. Each surface is one tab.
 #
-#   style         terminal, discord or slack (controls how the reply is drawn)
+#   style         terminal, discord, slack or grok (controls how the reply is drawn)
 #   answer        the tutor's reply. `backticks` become code; a line of ``` starts
 #                 and ends a code block. In the terminal style everything prints as typed.
 #   illustrative  true if this reply was not captured from that interface
@@ -8,7 +8,8 @@
 
 caption: >-
   Discord and Slack replies are transcribed from tutor screenshots in the
-  project docs. The CLI view reuses the Discord reply to show the terminal format.
+  project docs. The CLI and Grok Bot views reuse the Discord reply to show
+  those formats.
 
 surfaces:
   - id: cli
@@ -58,3 +59,21 @@ surfaces:
       2. **Choose the column** you want to filter by.
       3. **Define the condition** for filtering (e.g., greater than a certain value, equal to a specific value, etc.).
       4. **Use the `where` method** to apply the filter.
+
+  - id: grok
+    label: Grok Bot
+    style: grok
+    question: How can I filter a table
+    botName: Data 8 Tutor
+    illustrative: true
+    note: >-
+      Illustrative view. You ask in plain text, with no mention. The reply is
+      the Discord answer, reused to show the format.
+    answer: |
+      To filter a table, you can use the `where` method, which allows you to specify a condition that the rows must meet.
+
+      For example, if you have a table called `my_table` and you want to filter it to include only rows where a certain column (let's say `"column_name"`) meets a specific condition (like being greater than a certain value), you would write:
+
+      ```
+      filtered_table = my_table.where("column_name", are.above(value))
+      ```

@@ -15,7 +15,7 @@ url: https://llm-tutors-for-all.github.io
 email: jedwin321@berkeley.edu
 
 links:
-  docs: https://llm-tutors-for-all.github.io/Documentation/home/
+  docs: https://llm-tutors-for-all.github.io/Documentation/
   github: https://github.com/LLM-Tutors-For-All
   docsRepo: https://github.com/LLM-Tutors-For-All/Documentation
 
@@ -43,7 +43,7 @@ footer:
   - title: Documentation
     links:
       - label: Docs home
-        href: https://llm-tutors-for-all.github.io/Documentation/home/
+        href: https://llm-tutors-for-all.github.io/Documentation/
       - label: Data 8 getting started
         href: https://llm-tutors-for-all.github.io/Documentation/how-to-use-our-bots/data8/getting-started/
       - label: Docs contact page

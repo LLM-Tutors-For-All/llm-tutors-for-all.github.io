@@ -1,5 +1,5 @@
 ---
-title: Three ways to reach learners
+title: Four ways to reach learners
 items:
   - name: Local CLI
     summary: >-
@@ -35,8 +35,22 @@ items:
     link:
       label: Slack setup guide
       href: https://llm-tutors-for-all.github.io/Documentation/tutor-options/interfaces/slack/
+  - name: Grok Bot
+    summary: >-
+      A hosted Data 8 tutor. Add the shared template to a Grok Bot account. On
+      first use it sets up the Spring 2026 course materials on its own computer,
+      then gives hints and cites lectures and the textbook.
+    examples:
+      - How do I use tbl.where? Give me a hint and cite the lecture or textbook source you used.
+    note: >-
+      You do not install the tutor or upload course files. It is instructed not
+      to hand over solution code.
+    link:
+      label: Grok Bot guide
+      href: https://llm-tutors-for-all.github.io/Documentation/tutor-options/interfaces/grok-bot/
 ---
 
-Each interface uses the same Data 8 corpus, retrieval and brain. That lets us
-study how the deployment itself changes latency, reliability, API usage, cost
-and the learner’s experience.
+Local CLI, Discord and Slack share one Data 8 corpus, retrieval setup and brain.
+That lets us study how the deployment changes latency, reliability, API usage,
+cost and the learner’s experience. Grok Bot is hosted: add the shared template,
+and it sets up the Spring 2026 course materials on its own computer.

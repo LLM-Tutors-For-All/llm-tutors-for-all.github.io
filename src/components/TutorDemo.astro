@@ -73,7 +73,8 @@ const demo = await getDemo();
                   <Image src={logo} alt="" width={36} height={36} densities={[1, 2]} class="avatar avatar-bot" />
                   <div class="msg-body">
                     <p class="msg-name">
-                      {surface.botName} <span class="app-tag">App</span>
+                      {surface.botName}
+                      {surface.style !== 'grok' && <span class="app-tag">App</span>}
                     </p>
                     <div class="msg-text rich" data-demo-answer set:html={renderAnswer(surface.answer)} />
                   </div>
@@ -105,8 +106,9 @@ const demo = await getDemo();
 
   .demo-top {
     display: none;
-    align-items: stretch;
+    align-items: flex-end;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 0.75rem;
     padding-inline: 1.25rem 0.75rem;
     border-bottom: 1px solid var(--rule-strong);
@@ -115,7 +117,9 @@ const demo = await getDemo();
   /* Underline tabs, the same as the header navigation. */
   .demo-tabs {
     display: flex;
-    gap: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.15rem 1rem;
+    min-width: 0;
   }
 
   .demo-tabs [role='tab'],

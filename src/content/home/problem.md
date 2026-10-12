@@ -16,7 +16,8 @@ factors:
   - title: Where learners work
     body: >-
       A terminal next to the assignment, a course Discord server, a department
-      Slack workspace. The tutor has to meet students where they already ask.
+      Slack workspace, or a hosted Grok Bot. The tutor has to meet students
+      where they already ask.
 closing: >-
   So we’re building a reproducible benchmark and a set of recommendations, so
   instructors and developers can choose a model or tutor with evidence instead

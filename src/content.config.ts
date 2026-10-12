@@ -223,7 +223,7 @@ const demo = defineCollection({
         z.strictObject({
           id: z.string().regex(/^[a-z0-9-]+$/),
           label: z.string(),
-          style: z.enum(['terminal', 'discord', 'slack']),
+          style: z.enum(['terminal', 'discord', 'slack', 'grok']),
           question: z.string(),
           command: z.string().optional(),
           mention: z.string().optional(),

@@ -6,11 +6,6 @@
 #   illustrative  true if this reply was not captured from that interface
 #   note          optional line shown under the demo while this tab is open
 
-caption: >-
-  Discord and Slack replies are transcribed from tutor screenshots in the
-  project docs. The CLI and Grok Bot views reuse the Discord reply to show
-  those formats.
-
 surfaces:
   - id: cli
     label: Local CLI
@@ -48,9 +43,6 @@ surfaces:
     question: How to filter from table?
     mention: "@Data8 Tutor"
     botName: Data8 Tutor
-    note: >-
-      Same engine, different surface: Slack shows the reply’s Markdown bold as
-      literal asterisks.
     answer: |
       To filter rows from a table, you'll typically use the `where` method. This allows you to specify a condition based on a column's values.
 
@@ -65,15 +57,7 @@ surfaces:
     style: grok
     question: How can I filter a table
     botName: Data 8 Tutor
-    illustrative: true
-    note: >-
-      Illustrative view. You ask in plain text, with no mention. The reply is
-      the Discord answer, reused to show the format.
     answer: |
-      To filter a table, you can use the `where` method, which allows you to specify a condition that the rows must meet.
+      You filter a table with `tbl.where(column, condition)`. It keeps only the rows where that column meets the condition, like `are.above(10)` or `are.equal_to('PG')`. If you leave out `are` and just pass a value, it matches that value exactly.
 
-      For example, if you have a table called `my_table` and you want to filter it to include only rows where a certain column (let's say `"column_name"`) meets a specific condition (like being greater than a certain value), you would write:
-
-      ```
-      filtered_table = my_table.where("column_name", are.above(value))
-      ```
+      What are you trying to filter? Tell me the table, the column, and what you want to keep, and I'll point you to the next step. Textbook 6.2 (Selecting Rows) lists every `are` option.

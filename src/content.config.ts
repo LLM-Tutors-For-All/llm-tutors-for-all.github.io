@@ -217,7 +217,6 @@ const people = defineCollection({
 const demo = defineCollection({
   loader: singleEntry('src/content/demo.yaml', 'demo', parseYaml),
   schema: z.strictObject({
-    caption: z.string(),
     surfaces: z
       .array(
         z.strictObject({

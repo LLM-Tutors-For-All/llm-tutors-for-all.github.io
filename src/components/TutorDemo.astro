@@ -88,7 +88,6 @@ const demo = await getDemo();
   </div>
   <figcaption class="demo-caption">
     <span class="demo-note" data-demo-note aria-live="polite">{demo.surfaces[0]?.note}</span>
-    <span>{demo.caption}</span>
   </figcaption>
 </figure>
 
@@ -337,23 +336,15 @@ const demo = await getDemo();
     font-size: inherit;
   }
 
-  .demo-caption {
-    display: grid;
-    gap: 0.4rem;
-    margin-top: 0.9rem;
-    color: var(--muted);
-    font-size: 0.9375rem;
-    font-style: italic;
-    line-height: 1.5;
-  }
-
-  .demo-note:empty {
+  .demo-caption:has(.demo-note:empty) {
     display: none;
   }
 
-  .demo-note {
+  .demo-caption {
+    margin-top: 0.9rem;
     color: var(--ink);
-    font-style: normal;
+    font-size: 0.9375rem;
+    line-height: 1.5;
   }
 
   /* Streaming */

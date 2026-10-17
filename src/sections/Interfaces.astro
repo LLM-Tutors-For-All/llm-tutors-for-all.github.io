@@ -1,8 +1,22 @@
 ---
+import { Image } from 'astro:assets';
 import Section from '../components/Section.astro';
 import { getSection } from '../lib/content';
 
 const { data, Content } = await getSection('interfaces', 'interfaces');
+
+// Logos are files in src/assets/interfaces/, referenced by file name in interfaces.md.
+const logos = import.meta.glob<{ default: ImageMetadata }>('../assets/interfaces/*.{jpg,jpeg,png,webp,avif}', {
+  eager: true,
+});
+
+const logoFor = (file: string) => {
+  const found = logos[`../assets/interfaces/${file}`];
+  if (!found) {
+    throw new Error(`interfaces.md: logo "${file}" was not found in src/assets/interfaces/.`);
+  }
+  return found.default;
+};
 ---
 
 <Section id="interfaces" title={data.title}>
@@ -12,7 +26,23 @@ const { data, Content } = await getSection('interfaces', 'interfaces');
     {
       data.items.map((item) => (
         <li class="iface">
-          <h3 class="iface-name">{item.name}</h3>
+          <div class="iface-head">
+            {item.logo && (
+              <span class="iface-logo-wrap">
+                <Image
+                  src={logoFor(item.logo)}
+                  alt=""
+                  width={48}
+                  height={48}
+                  densities={[1, 2]}
+                  fit="cover"
+                  position="center"
+                  class="iface-logo"
+                />
+              </span>
+            )}
+            <h3 class="iface-name">{item.name}</h3>
+          </div>
           <p class="iface-summary">{item.summary}</p>
           <p class="iface-label">{item.examplesLabel}</p>
           <ul class="iface-examples">
@@ -76,11 +106,37 @@ const { data, Content } = await getSection('interfaces', 'interfaces');
     background: var(--signal);
   }
 
+  .iface-head {
+    display: flex;
+    align-items: center;
+    gap: 0.95rem;
+    min-width: 0;
+  }
+
+  /* Circular marks, same language as the team portraits. */
+  .iface-logo-wrap {
+    flex: none;
+    display: grid;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: 1px solid var(--rule-strong);
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .iface-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
   .iface-name {
+    min-width: 0;
     font-family: var(--font-display);
     font-weight: 700;
     font-size: 1.75rem;
-    line-height: 1.1;
+    line-height: 1.15;
     letter-spacing: -0.03em;
   }
 

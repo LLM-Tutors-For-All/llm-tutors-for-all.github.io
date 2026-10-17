@@ -2,6 +2,7 @@
 title: Four ways to reach learners
 items:
   - name: Local CLI
+    logo: cli.png
     summary: >-
       The quickest way to try the tutor without setting up a chat platform. Ask
       one question, hold a conversation, or check which course passages a
@@ -14,6 +15,7 @@ items:
       label: Local CLI guide
       href: https://llm-tutors-for-all.github.io/Documentation/tutor-options/interfaces/local-cli/
   - name: Discord
+    logo: discord.png
     summary: >-
       Students ask by mentioning the tutor, sending it a direct message, or using
       the tutor slash command in a course server.
@@ -25,6 +27,7 @@ items:
       label: Discord setup guide
       href: https://llm-tutors-for-all.github.io/Documentation/tutor-options/interfaces/discord/
   - name: Slack
+    logo: slack.png
     summary: >-
       Mentions, direct messages and the tutor slash command, connected through
       Socket Mode, so no public web server is needed.
@@ -36,6 +39,7 @@ items:
       label: Slack setup guide
       href: https://llm-tutors-for-all.github.io/Documentation/tutor-options/interfaces/slack/
   - name: Grok Bot
+    logo: grok.jpg
     summary: >-
       A hosted Data 8 tutor. Add the shared template to a Grok Bot account. On
       first use it sets up the Spring 2026 course materials on its own computer,

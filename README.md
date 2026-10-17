@@ -42,6 +42,7 @@ The site has three pages. Each has a folder in `src/content/`.
 | | Benchmarks summary (its lists come from the Benchmarks page) | `src/content/home/benchmarks.md` |
 | | The tutor pipeline | `src/content/home/how-it-works.md` |
 | | Local CLI, Discord, Slack and Grok Bot cards | `src/content/home/interfaces.md` |
+| | Interface logos | `src/assets/interfaces/` |
 | | Research direction (Now / Next / Later) | `src/content/home/research.md` |
 | | The closing "Get involved" band | `src/content/home/get-involved.md` |
 | | The animated demo in the hero | `src/content/demo.yaml` |

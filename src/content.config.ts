@@ -95,6 +95,7 @@ const interfaces = defineCollection({
       .array(
         z.strictObject({
           name: z.string(),
+          logo: z.string().optional(),
           summary: z.string(),
           examplesLabel: z.string().default('How learners ask'),
           examples: z.array(z.string()).min(1),

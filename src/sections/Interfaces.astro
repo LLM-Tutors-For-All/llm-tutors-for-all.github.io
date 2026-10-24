@@ -28,14 +28,14 @@ const logoFor = (file: string) => {
         <li class="iface">
           <div class="iface-head">
             {item.logo && (
-              <span class="iface-logo-wrap">
+              <span class:list={['iface-logo-wrap', { 'is-slack': item.logo === 'slack.png' }]}>
                 <Image
                   src={logoFor(item.logo)}
                   alt=""
                   width={48}
                   height={48}
                   densities={[1, 2]}
-                  fit="cover"
+                  fit={item.logo === 'slack.png' ? 'contain' : 'cover'}
                   position="center"
                   class="iface-logo"
                 />
@@ -129,6 +129,16 @@ const logoFor = (file: string) => {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  /* Slack’s mark needs padding so the full # sits inside the circle. */
+  .iface-logo-wrap.is-slack {
+    background: #fff;
+    padding: 0.4rem;
+  }
+
+  .iface-logo-wrap.is-slack .iface-logo {
+    object-fit: contain;
   }
 
   .iface-name {

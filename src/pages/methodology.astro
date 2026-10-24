@@ -1,0 +1,437 @@
+---
+import PageIntro from '../components/PageIntro.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const lenses = [
+  {
+    number: '01',
+    title: 'General capability',
+    body: 'Knowledge, reasoning, mathematics and instruction following: the foundation a tutor needs before it can teach well.',
+    examples: 'MMLU-Pro · C-Eval · IFEval · MATH-500 · AIME',
+  },
+  {
+    number: '02',
+    title: 'Safety & trustworthiness',
+    body: 'Whether a tutor refuses unsafe requests, redirects constructively, answers benign questions and stays robust under adversarial pressure.',
+    examples: 'Refusal · safe guidance · benign answering · teaching safety · adversarial prompts',
+  },
+  {
+    number: '03',
+    title: 'Basic education',
+    body: 'The practical work of teaching: explaining concepts, generating useful questions, planning lessons and guiding a learner step by step.',
+    examples: 'Explanations · contextualized questions · lesson planning · guided tutoring',
+  },
+  {
+    number: '04',
+    title: 'High-level cultivation',
+    body: 'The harder-to-measure layer of educational judgment: responding to students with empathy, accountability and a productive next step.',
+    examples: 'Educational judgment · educational generation',
+  },
+];
+
+const scoringMethods = [
+  {
+    title: 'Reference scoring',
+    body: 'Exact answers, multiple-choice targets and other tasks with a clear correct response are checked against a reference.',
+  },
+  {
+    title: 'Deterministic rules',
+    body: 'Instruction-following tasks use repeatable checks for requirements such as required phrases, word limits or formatting constraints.',
+  },
+  {
+    title: 'Safety scoring',
+    body: 'Safety tasks distinguish appropriate refusal, constructive redirection, benign helpfulness, over-refusal and risky procedural detail.',
+  },
+  {
+    title: 'Rubrics and judges',
+    body: 'Open-ended tutoring responses are evaluated against written criteria so quality can be assessed beyond exact-match correctness.',
+  },
+  {
+    title: 'Human evaluation',
+    body: 'Expert and human annotations calibrate the harder judgments and help us test whether automated judges agree with people.',
+  },
+];
+
+const judgeTracks = [
+  {
+    label: 'Jury',
+    title: 'Multiple evaluators, one decision',
+    body: 'A jury-based track explores whether agreement across judges produces a more stable signal than relying on one evaluator.',
+  },
+  {
+    label: 'Single output',
+    title: 'A scalable baseline',
+    body: 'A single-output judge scores one response against a rubric. It is simple to run and gives us a useful baseline for studying variance and calibration.',
+  },
+  {
+    label: 'Self-preference',
+    title: 'Testing evaluator bias',
+    body: 'A self-preference track asks whether a judge favors its own model’s answer, even when answer quality is held constant or authorship changes.',
+  },
+];
+---
+
+<BaseLayout
+  title="Methodology"
+  description="How LLM Tutors For All evaluates educational capability, safety, tutoring quality and the reliability of its evaluators."
+>
+  <PageIntro title="Methodology">
+    <p>
+      A benchmark is only useful when you can see how a score was made. We combine task-specific checks,
+      structured judgment and real deployment measurements to understand not just whether a model answers,
+      but whether it can be trusted to teach.
+    </p>
+  </PageIntro>
+
+  <section class="method-section" aria-labelledby="lenses-title">
+    <div class="container-site">
+      <div class="section-heading" data-reveal>
+        <p class="eyebrow">The benchmark shape</p>
+        <h2 id="lenses-title" class="type-h2">Four lenses on an education-facing model</h2>
+        <p class="section-lead">
+          We report a module profile instead of hiding every strength and weakness inside one leaderboard number.
+        </p>
+      </div>
+
+      <div class="lens-grid" data-reveal>
+        {lenses.map((lens) => (
+          <article class="lens-card">
+            <p class="card-number">{lens.number}</p>
+            <h3>{lens.title}</h3>
+            <p class="card-body">{lens.body}</p>
+            <p class="card-examples">{lens.examples}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="method-section method-section-muted" aria-labelledby="scoring-title">
+    <div class="container-site">
+      <div class="section-heading" data-reveal>
+        <p class="eyebrow">From response to score</p>
+        <h2 id="scoring-title" class="type-h2">The scoring method follows the task</h2>
+        <p class="section-lead">
+          Exact-match items should not be judged like a tutoring conversation. Each task family uses the lightest
+          method that can measure it well, with human checks where the judgment is genuinely open-ended.
+        </p>
+      </div>
+
+      <dl class="scoring-list" data-reveal>
+        {scoringMethods.map((method) => (
+          <div class="scoring-row">
+            <dt>{method.title}</dt>
+            <dd>{method.body}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="method-section" aria-labelledby="pipeline-title">
+    <div class="container-site">
+      <div class="section-heading" data-reveal>
+        <p class="eyebrow">How results travel</p>
+        <h2 id="pipeline-title" class="type-h2">From item-level evidence to a useful profile</h2>
+      </div>
+
+      <ol class="pipeline" data-reveal>
+        <li>
+          <span class="pipeline-step">01</span>
+          <div>
+            <h3>Run the same task</h3>
+            <p>Models and complete tutor systems receive the same prompts, context and evaluation conditions.</p>
+          </div>
+        </li>
+        <li>
+          <span class="pipeline-step">02</span>
+          <div>
+            <h3>Keep the evidence</h3>
+            <p>Responses, item scores, rubric decisions and harness settings stay attached to the result.</p>
+          </div>
+        </li>
+        <li>
+          <span class="pipeline-step">03</span>
+          <div>
+            <h3>Aggregate by module</h3>
+            <p>Scores become a profile across capability, safety, basic education and high-level cultivation.</p>
+          </div>
+        </li>
+        <li>
+          <span class="pipeline-step">04</span>
+          <div>
+            <h3>Report tradeoffs</h3>
+            <p>Overall averages, uncertainty, cost, latency and deployment constraints are read together—not as a single rank.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="method-section method-section-dark" aria-labelledby="judges-title">
+    <div class="container-site">
+      <div class="section-heading" data-reveal>
+        <p class="eyebrow">Evaluator reliability</p>
+        <h2 id="judges-title" class="type-h2">We benchmark the judges, too</h2>
+        <p class="section-lead">
+          The repository also explores how reliable an automated evaluator is. These are methodology tracks—not extra
+          educational domains—and they help us understand how much confidence to place in a score.
+        </p>
+      </div>
+
+      <div class="judge-grid" data-reveal>
+        {judgeTracks.map((track) => (
+          <article class="judge-card">
+            <p class="judge-label">{track.label}</p>
+            <h3>{track.title}</h3>
+            <p>{track.body}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="method-section method-section-final" aria-labelledby="release-title">
+    <div class="container-site">
+      <div class="release-note" data-reveal>
+        <div>
+          <p class="eyebrow">What should ship with a result</p>
+          <h2 id="release-title" class="type-h2">Make every number inspectable</h2>
+        </div>
+        <ul>
+          <li>Methodology and metric definitions</li>
+          <li>Exact harness configuration</li>
+          <li>Test questions and prompts</li>
+          <li>Raw measurements behind the chart</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .method-section {
+    padding-block: clamp(5rem, 11vw, 8.5rem);
+    border-top: 1px solid var(--rule);
+  }
+
+  .method-section-muted {
+    background: var(--surface);
+  }
+
+  .method-section-dark {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .method-section-final {
+    border-top: 0;
+  }
+
+  .section-heading {
+    display: grid;
+    gap: 1rem;
+    max-width: 48rem;
+    margin-bottom: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .section-heading .type-h2 {
+    max-width: 16ch;
+  }
+
+  .eyebrow,
+  .card-number,
+  .judge-label,
+  .pipeline-step {
+    color: var(--signal);
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .section-lead {
+    max-width: 39rem;
+    color: var(--muted);
+    font-size: 1.125rem;
+  }
+
+  .method-section-dark .section-lead {
+    color: color-mix(in srgb, var(--paper) 72%, transparent);
+  }
+
+  .lens-grid,
+  .judge-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .lens-card,
+  .judge-card {
+    padding: 1.5rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 4px;
+  }
+
+  .lens-card h3,
+  .judge-card h3 {
+    margin-top: 2.25rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.55rem;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  .card-body,
+  .judge-card > p:last-child {
+    margin-top: 0.75rem;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .card-examples {
+    margin-top: 1.35rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+
+  .scoring-list {
+    border-top: 1px solid var(--ink);
+  }
+
+  .scoring-row {
+    display: grid;
+    gap: 0.6rem;
+    padding-block: 1.25rem;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  .scoring-row dt {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  .scoring-row dd {
+    max-width: 42rem;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .pipeline {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--ink);
+  }
+
+  .pipeline li {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 1rem;
+    padding-block: 1.5rem;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  .pipeline-step {
+    padding-top: 0.15rem;
+  }
+
+  .pipeline h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  .pipeline p {
+    margin-top: 0.45rem;
+    max-width: 42rem;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .method-section-dark .judge-card {
+    border-color: color-mix(in srgb, var(--paper) 35%, transparent);
+  }
+
+  .method-section-dark .judge-card h3 {
+    color: var(--paper);
+  }
+
+  .method-section-dark .judge-card > p:last-child {
+    color: color-mix(in srgb, var(--paper) 72%, transparent);
+  }
+
+  .release-note {
+    display: grid;
+    gap: 2rem;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid var(--rule-strong);
+    background: var(--surface);
+  }
+
+  .release-note .type-h2 {
+    margin-top: 0.75rem;
+    max-width: 12ch;
+  }
+
+  .release-note ul {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .release-note li {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--rule-strong);
+    font-family: var(--font-ui);
+    font-size: 1.08rem;
+    font-weight: 600;
+  }
+
+  .release-note li::before {
+    content: '↳';
+    display: inline-block;
+    margin-right: 0.65rem;
+    color: var(--signal);
+  }
+
+  @media (min-width: 40rem) {
+    .lens-grid,
+    .judge-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+
+    .release-note {
+      grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.8fr);
+      align-items: start;
+      gap: 3rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .lens-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .judge-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .lens-card,
+    .judge-card {
+      padding: 1.75rem;
+    }
+  }
+</style>

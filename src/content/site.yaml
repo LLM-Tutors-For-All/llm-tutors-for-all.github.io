@@ -26,6 +26,8 @@ nav:
     href: /
   - label: Benchmarks
     href: /benchmarks/
+  - label: Methodology
+    href: /methodology/
   - label: Team
     href: /team/
 
@@ -36,6 +38,8 @@ footer:
         href: /
       - label: Benchmarks
         href: /benchmarks/
+      - label: Methodology
+        href: /methodology/
       - label: Research direction
         href: /#research
       - label: Team
